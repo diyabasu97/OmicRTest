@@ -81,14 +81,23 @@ installApp <- function(version = NULL, overwrite = FALSE, lib.loc = NULL, ...) {
     stop("The app is already installed. Set overwrite=TRUE to replace it.")
   }
 
-  zipurl <- paste0(
-    "https://github.com/",
-    "abbvie-external/",
-    "OmicNavigatorWebApp",
-    "/releases/download/v",
-    version,
-    "/build.zip"
-  )
+  # zipurl <- paste0(
+  #   "https://github.com/",
+  #   "abbvie-external/",
+  #   "OmicNavigatorWebApp",
+  #   "/releases/download/v",
+  #   version,
+  #   "/build.zip"
+  # )
+zipurl <- paste0(
+  "https://github.com/",
+  "diyabasu97/",
+  "OmicUITest",
+  "/releases/download/OmicUITest",
+  version,
+  "/build.zip"
+)
+  
   zipfile <- file.path(installDir, "build.zip")
 
   message("Installation plan:")
