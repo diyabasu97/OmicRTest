@@ -1,0 +1,9 @@
+digraph G {
+  graph [rankdir="LR", fontsize="16"];
+  testNode1 [label = "test: cases vs controls"];
+  testNode2 [label = "test: cases vs controls"];
+  "model: cases vs controls" -> "annotation: KEGG";
+  "model: cases vs controls" -> "annotation: Reactome";
+  "annotation: KEGG" -> testNode1;
+  "annotation: Reactome" -> testNode2;
+}

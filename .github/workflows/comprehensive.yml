@@ -1,0 +1,76 @@
+# Adapted from usethis::use_github_action_check_standard()
+name: Comprehensive test
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/comprehensive.yml'
+      - '.Rbuildignore'
+      - 'data/**'
+      - 'DESCRIPTION'
+      - 'inst/tinytest/**'
+      - 'man/**'
+      - 'NAMESPACE'
+      - 'R/**'
+      - 'tests/**'
+      - 'vignettes/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/comprehensive.yml'
+      - '.Rbuildignore'
+      - 'data/**'
+      - 'DESCRIPTION'
+      - 'inst/tinytest/**'
+      - 'man/**'
+      - 'NAMESPACE'
+      - 'R/**'
+      - 'tests/**'
+      - 'vignettes/**'
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash {0}
+jobs:
+  check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
+          - {os: ubuntu-22.04, r: '4.1.2'}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies from PPM snapshot for Ubuntu build
+        if: runner.os == 'Linux'
+        run: |
+          echo "CRAN=https://packagemanager.posit.co/cran/__linux__/jammy/2021-12-29" >> $GITHUB_ENV
+          echo "RSPM=https://packagemanager.posit.co/cran/__linux__/jammy/2021-12-29" >> $GITHUB_ENV
+      - uses: r-lib/actions/setup-r@v2-branch
+        with:
+          r-version: ${{ matrix.config.r }}
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-pandoc@v2
+      - name: Install TinyTeX
+        uses: r-lib/actions/setup-tinytex@v2
+        env:
+          # install full prebuilt version
+          TINYTEX_INSTALLER: TinyTeX
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          cache-version: 1
+      - name: Build
+        run: R CMD build --no-manual .
+      - name: Check
+        env:
+          R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: R CMD check --no-manual --as-cran OmicNavigator_*.tar.gz
+      - name: Test results
+        if: always()
+        run: cat OmicNavigator.Rcheck/tests/tinytest.Rout*

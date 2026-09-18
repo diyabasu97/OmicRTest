@@ -1,0 +1,6 @@
+digraph G {
+  graph [rankdir="LR", fontsize="16"];
+  "model: Main model" -> "annotation: MSigDB c2";
+  "annotation: MSigDB c2" -> "test: Basal vs ML";
+  "annotation: MSigDB c2" -> "test: Basal vs LP";
+}
